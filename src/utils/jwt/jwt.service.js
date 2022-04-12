@@ -4,6 +4,7 @@ const { config } = require("../../config");
 class JWT {
     async verifyToken (token) {
         try {
+            // const token = req.headers.authorization.split(" ")[1];
             const res = await jwt.verify(token, config.authJwtService, {
                 algorithm:  [config.algorithmToken]
             })

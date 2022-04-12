@@ -18,6 +18,7 @@ class App {
     async middlewares(){
         this.app.use(cors(config.cors));
         if (config.db_name === 'mongo') {
+            // Activo coneccion a Mongo DB Atlas 
             let {connection} = require("./config/mongodb");
         }
     }
