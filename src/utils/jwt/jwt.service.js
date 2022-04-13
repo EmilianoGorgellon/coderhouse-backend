@@ -2,29 +2,32 @@ const jwt = require("jsonwebtoken");
 const { config } = require("../../config");
 
 class JWT {
-    async verifyToken (token) {
+    async verifyToken (req, res, next) {
         try {
-            // const token = req.headers.authorization.split(" ")[1];
-            const res = await jwt.verify(token, config.authJwtService, {
+            const token = req.headers.authorization.split(" ")[1];
+            jwt.verify(token, config.jwt_secret, {
                 algorithm:  [config.algorithmToken]
-            })
-            console.log("ACA VA LA REPSPUESTA DEL VERIFY TOKEN")
-            console.log(res);
-            return res;
+            });
+            next();
         } catch (error) {
-            console.log(error);
+            return res.status(401).json({"response": "No dispones de un token valido"})
         }
     }
 
     async generateToken (payloadTokenData) {
         try {
-            console.log("veo que hay en payload token data")
-            console.log(payloadTokenData);
-            return await jwt.sign(payloadTokenData, config.jwt_secret, {
+            const objectToToken = {
+                email: payloadTokenData.email,
+                name: payloadTokenData.name,
+                direction: payloadTokenData.direction,
+                edad: payloadTokenData.edad,
+                phone: payloadTokenData.phone,
+                photo: payloadTokenData.photo
+            }
+            return jwt.sign(objectToToken, config.jwt_secret, {
                 expiresIn: config.jwt_expire_time * 1000 || 600000,
                 algorithm: config.jwt_algorithm_token || 'HS256'
             });
-
         } catch (error) {
             console.log(error);
             return "error en generate token";
@@ -36,7 +39,6 @@ class JWT {
             const decodeToken = await jwt.decode(token, config.jwt_secret, {
                 algorithm: [config.algorithm || 'HS256']
             })
-            console.log(decodeToken);
             return decodeToken;
         } catch (error) {
             return console.log(error, "error en decode")

@@ -2,7 +2,8 @@ let express = require("express");
 let cors = require("cors");
 let path = require('path');
 const {config} = require("./config");
-const routesServer = require("./routes")
+const multer = require("multer");
+const routesServer = require("./routes");
 class App {
     constructor() {
         this.app = express();
@@ -13,7 +14,14 @@ class App {
     async settings(){
         this.app.use(express.json());
         this.app.use(express.urlencoded({extended:true}));
-        this.app.use(express.static(path.join(__dirname, "public", "html")));
+        this.app.use(express.static(path.join(__dirname, "public")));
+        const storage = multer.diskStorage({
+            destination: path.join(__dirname, "public/uploads"),
+            filename: (req, file, cb) => {
+                cb(null, new Date().getTime() + path.extname(file.originalname))
+            }
+        })  
+        this.app.use(multer({storage}).single('image'));
     }
     async middlewares(){
         this.app.use(cors(config.cors));

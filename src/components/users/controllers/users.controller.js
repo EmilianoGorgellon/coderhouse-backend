@@ -1,14 +1,11 @@
-const { config } = require("../../../config");
-// const {userModel} = require("../../../models/model/user.model");
 const userService = require("../services/user.services");
 class User {
     async register (req, res, next){
         try {
-            const image = await userService.imageToBase64(req.file);
-            const response = await userService.createUser(req.body, image);
+            const response = await userService.createUser(req.body, req.file);
             return res.status(201).json(response);
         } catch (error) {
-            console.log(error);
+            return res.status(400).json({"response": "Error email ya registrado y/o contraseña invalida"})
         }
     }
     async updateUser (req, res, next) {

@@ -3,13 +3,14 @@ const bcrypter = require("../../../utils/crypter/crypter.service");
 const jwt = require("../../../utils/jwt/jwt.service");
 const fs = require('fs');
 class UserService {
-    async createUser (dataBody, image) {
+    async createUser (dataBody, imageFile) {
         let {password, email} = dataBody;
         const userExist = await this.getUserByEmail(email); 
-        if (userExist.length !== 0) throw new Error ("email ya registrado")
+        if (userExist.length !== 0) throw new Error ("email ya registrado");
         password = await bcrypter.hashPassword(password);
-        await userModel.create({...data, password, image});
-        return await jwt.generateToken({...data, password, image});
+        const photo = await this.imageToBase64(imageFile);
+        await userModel.create({...dataBody, password, photo});
+        return await jwt.generateToken({...dataBody, photo});
     }
     async updateUser (data) {
         const userExist = await this.getUserByEmail(data.email);
@@ -17,7 +18,14 @@ class UserService {
         // actualizo usuario con user model
     }
     async imageToBase64 (file) {
-        return "data:image/gif;base64," + fs.readFileSync(file, 'base64');
+        try {
+            const image = fs.readFileSync(file.path, {encoding: 'base64'});
+            fs.unlinkSync(file.path);
+            return image;
+        } catch (error) {
+            console.log(error)
+            return "Error en imagen a base 64"
+        }
     }
 
     async getUserByEmail (email) {
