@@ -4,6 +4,8 @@ let path = require('path');
 const {config} = require("./config");
 const multer = require("multer");
 const routesServer = require("./routes");
+// console.log("se conecto mongo y ahora envio mail");
+// require("./utils/nodemailer/nodemailer");
 class App {
     constructor() {
         this.app = express();

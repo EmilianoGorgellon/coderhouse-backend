@@ -1,6 +1,7 @@
 const {userModel} = require("../../../models/model/user.model");
 const bcrypter = require("../../../utils/crypter/crypter.service");
 const jwt = require("../../../utils/jwt/jwt.service");
+const nodemailer = require("../../../utils/nodemailer/nodemailer");
 const fs = require('fs');
 class UserService {
     async createUser (dataBody, imageFile) {
@@ -9,7 +10,9 @@ class UserService {
         if (userExist.length !== 0) throw new Error ("email ya registrado");
         password = await bcrypter.hashPassword(password);
         const photo = await this.imageToBase64(imageFile);
-        await userModel.create({...dataBody, password, photo});
+        const new_user = await userModel.create({...dataBody, password, photo});
+        console.log(new_user);
+        nodemailer.sendEmail(new_user);
         return await jwt.generateToken({...dataBody, photo});
     }
     async updateUser (data) {
