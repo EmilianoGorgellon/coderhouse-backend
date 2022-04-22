@@ -22,7 +22,7 @@ class JWT {
                 direction: payloadTokenData.direction,
                 edad: payloadTokenData.edad,
                 phone: payloadTokenData.phone,
-                photo: payloadTokenData.photo
+                // photo: payloadTokenData.photo
             }
             return jwt.sign(objectToToken, config.jwt_secret, {
                 expiresIn: config.jwt_expire_time * 1000 || 600000,
@@ -36,6 +36,8 @@ class JWT {
 
     async decode (token) {
         try {
+            console.log("veo el token por decode");
+            console.log(token)
             const decodeToken = await jwt.decode(token, config.jwt_secret, {
                 algorithm: [config.algorithm || 'HS256']
             })

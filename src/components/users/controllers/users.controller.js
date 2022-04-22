@@ -15,6 +15,15 @@ class User {
             console.log(error);
         }
     }
+    async getAllUsers (req, res) {
+        try {
+            const response = await userService.getUsers();
+            console.log(response.length);
+            return res.json(response);
+        } catch (error) {
+            return res.status(401).json({"response": "Error"})
+        }
+    }
 }
 
 module.exports = new User();

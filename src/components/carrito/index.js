@@ -8,5 +8,6 @@ module.exports = app =>{
     router.delete('/:id', carritoControllers.deleteCarrito)
     router.get('/:id/productos', carritoControllers.getCarritoProducts);
     router.post('/:id/productos/:id_prod', carritoControllers.addProductCarrito);
-    router.delete('/:id/productos/:id_prod', carritoControllers.deleteCarritoProductByIds)
+    router.delete('/:id/productos/:id_prod', carritoControllers.deleteCarritoProductByIds);
+    router.post('/:id/send', carritoControllers.sendEmail);
 }

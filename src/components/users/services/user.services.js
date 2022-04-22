@@ -11,8 +11,8 @@ class UserService {
         password = await bcrypter.hashPassword(password);
         const photo = await this.imageToBase64(imageFile);
         const new_user = await userModel.create({...dataBody, password, photo});
-        console.log(new_user);
-        nodemailer.sendEmail(new_user);
+        // nodemailer.sendEmail(new_user);
+        await nodemailer.sendMail(new_user);
         return await jwt.generateToken({...dataBody, photo});
     }
     async updateUser (data) {
@@ -36,6 +36,13 @@ class UserService {
             return await userModel.find({email: email})
         } catch (error) {
             return new Error("Error in get user by email")
+        }
+    }
+    async getUsers () {
+        try {
+            return await userModel.find({});
+        } catch (error) {
+            return new Error("Error in get users")
         }
     }
 }

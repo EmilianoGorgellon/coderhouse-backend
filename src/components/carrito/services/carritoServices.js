@@ -1,10 +1,27 @@
 let fs = require("fs");
+const jwt = require("../../../utils/jwt/jwt.service");
+const nodemailer = require("../../../utils/nodemailer/nodemailer");
 class Carrito {
     constructor(url, db_client, db_collection, db_name){
         this.url = url,
         this.db_client = db_client,
         this.db_collection = db_collection,
         this.db_name = db_name
+    }
+    async sendEmailCarrito (req) {
+        try {
+            const data_user = await jwt.decode(req.headers.authorization.split(" ")[1]);
+            const data_carrito = await this.getCarritoProducts(req.params);
+            const send_email_user = await nodemailer.sendMailCarrito(data_user, data_carrito[0].productos);
+            console.log("veo repsuesta del mail carrito");
+            console.log(send_email_user);
+            return send_email_user;
+            // const carrito_products = await this.getCarritoProducts(id.id);
+            // console.log(carrito_products);
+            // const data_token = 
+        } catch (error) {
+            return console.log(error);
+        }
     }
     async getAll(){
         try {
@@ -81,7 +98,10 @@ class Carrito {
 
     async getCarritoProducts(id){
         try {
-            id = parseInt(id.id)
+            console.log(id);
+            id = parseInt(id.id);
+            console.log("veo el id");
+            console.log(id)
             let getAllCarrito = await this.getAll();
             let newAllCarrito = getAllCarrito.filter(data => data.id === id)
             return newAllCarrito;
