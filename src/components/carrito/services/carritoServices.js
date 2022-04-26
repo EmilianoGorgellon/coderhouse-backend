@@ -1,6 +1,7 @@
 let fs = require("fs");
 const jwt = require("../../../utils/jwt/jwt.service");
 const nodemailer = require("../../../utils/nodemailer/nodemailer");
+const { send_whatsapp_twilio } = require("../../../utils/twilio/twilio");
 class Carrito {
     constructor(url, db_client, db_collection, db_name){
         this.url = url,
@@ -8,17 +9,13 @@ class Carrito {
         this.db_collection = db_collection,
         this.db_name = db_name
     }
-    async sendEmailCarrito (req) {
+    async sendNotificationCarrito (req) {
         try {
             const data_user = await jwt.decode(req.headers.authorization.split(" ")[1]);
             const data_carrito = await this.getCarritoProducts(req.params);
-            const send_email_user = await nodemailer.sendMailCarrito(data_user, data_carrito[0].productos);
-            console.log("veo repsuesta del mail carrito");
-            console.log(send_email_user);
-            return send_email_user;
-            // const carrito_products = await this.getCarritoProducts(id.id);
-            // console.log(carrito_products);
-            // const data_token = 
+            await nodemailer.sendMailCarrito(data_user, data_carrito[0].productos);
+            await send_whatsapp_twilio(data_user);
+            return `Email y mensaje por whatsapp a ${data_user.name}`;
         } catch (error) {
             return console.log(error);
         }

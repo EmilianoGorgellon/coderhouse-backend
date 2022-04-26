@@ -1,11 +1,13 @@
 let express = require("express");
+const cluster = require("cluster");
+const numCPUs = require("os").cpus().length;
 let cors = require("cors");
 let path = require('path');
 const {config} = require("./config");
 const multer = require("multer");
 const routesServer = require("./routes");
-// console.log("se conecto mongo y ahora envio mail");
-// require("./utils/nodemailer/nodemailer");
+const isCluster = false;
+
 class App {
     constructor() {
         this.app = express();
@@ -36,23 +38,27 @@ class App {
         routesServer(this.app);
     }
     async listen(){
-        // if(cluster.isMaster){
-        //     for (let i = 0; i < numCPUs; i++) {
-        //         cluster.fork();                
-        //     }
-        //     cluster.on("exit", (worker, corde, signal)=>{
-        //         console.log(`Worker dead ${worker.process.pid}`);
-        //         cluster.fork();
-        //     })
-        // }else{
-        //     this.app.listen(this.port, err=>{
-        //         console.log(`Server on http://localhost:${this.port}`)
-        //     })
-        // }
-
-        this.app.listen(this.port, err=>{
-            console.log(`Server on http://localhost:${this.port}`)
-        })
+        // console.log(numCPUs)
+        if (isCluster) {
+            if(cluster.isMaster){
+                for (let i = 0; i < numCPUs; i++) {
+                    cluster.fork();                
+                }
+                cluster.on("exit", (worker, corde, signal)=>{
+                    console.log(`Worker dead ${worker.process.pid}`);
+                    cluster.fork();
+                })
+            }else{
+                this.app.listen(this.port, err=>{
+                    console.log("PAS OPOR ELSE DE CLUSTER")
+                    console.log(`Server on http://localhost:${this.port}`)
+                })
+            }
+        } else {
+            this.app.listen(this.port, err=>{
+                console.log(`SIN CLUSTER: Server on http://localhost:${this.port}`)
+            })
+        }   
     }
 }
 

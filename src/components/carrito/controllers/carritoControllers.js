@@ -40,8 +40,8 @@ const deleteCarritoProductByIds = async (req, res) => {
     res.json(await carrito.deleteCarritoProductByIds(req.params, time));
 }
 
-const sendEmail = async (req, res) => {
-    return res.json(await carrito.sendEmailCarrito(req));
+const sendNotification = async (req, res) => {
+    return res.json(await carrito.sendNotificationCarrito(req));
 }
 
-module.exports = {createCarrito, deleteCarrito, getCarritoProducts, addProductCarrito, deleteCarritoProductByIds, sendEmail}
+module.exports = {createCarrito, deleteCarrito, getCarritoProducts, addProductCarrito, deleteCarritoProductByIds, sendNotification}

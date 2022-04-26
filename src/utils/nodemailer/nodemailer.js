@@ -1,8 +1,8 @@
 const { createTransport } = require("nodemailer");
-const user = "emilianogorgellon49@gmail.com";
-const pass = "usllihgydqtvnjhb";
+const { config } = require("../../config")
+const user = config.nodemailer_user;
+const pass = config.nodemailer_pw;
 const transport = createTransport({
-    // host: "smtp.ethereal.email"
     service: 'gmail',
     port: 587,
     secure: true,
@@ -14,8 +14,6 @@ const transport = createTransport({
 class Nodemailer {
     async sendMail(data) {
         try {
-            console.log("ENTRO EN TRY Y VOY A ENVIAR EL CORREO");
-            console.log(data);
             const subject = "Nuevo registro!";
             const html = 
                 `
@@ -28,15 +26,12 @@ class Nodemailer {
                         <img src="data:image/png;base64,${data.photo}" alt="perfil-img-user" />
                     </ul>
                 `; 
-                // <img style="width: 300px; object-fit: contain;" src="data:image/png;base64,${data.photo}" alt="perfil-img-user" />
             const to = process.argv[4] || user;
-            const attach = process.argv[5] ? true : false;
             const response = await transport.sendMail({
                 from:"E-commerce de Emilano <ecommerceEmiliano@gmail.com>",
                 to,
                 subject,
                 html
-                // attachments: attach ? [{ path: `${data.photo}` }] : []
             });
             console.log(response);
         } catch (error) {
@@ -45,7 +40,6 @@ class Nodemailer {
     }
 
     async sendMailCarrito (data_user, data_carrito) {
-        const subject = `Nuevo pedido de ${data_user.name}!`;
         const html = 
             `
                 <h1>Informacion del pedido: </h1>
@@ -59,22 +53,13 @@ class Nodemailer {
                         </ul>
                     `)}
             `     
-            // <img style="width: 300px; object-fit: contain;" src="data:image/png;base64,${data.photo}" alt="perfil-img-user" />
-        const to =`${data_user.email}`;
-        // const attach = process.argv[5] ? true : false;
         const response = await transport.sendMail({
             from:"E-commerce de Emilano <ecommerceEmiliano@gmail.com>",
-            to,
-            subject,
+            to: `${data_user.email}`,
+            subject: `Nuevo pedido de ${data_user.name}!`,
             html
-            // attachments: attach ? [{ path: `${data.photo}` }] : []
         });
         return response;
     } 
 }
-// console.log("PASO POR ARCHIVO NODEMAILER.JS");
-
-// const sendEmail = async (data) => {
-   
-// };
 module.exports = new Nodemailer()

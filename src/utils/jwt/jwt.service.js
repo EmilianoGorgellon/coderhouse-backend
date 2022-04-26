@@ -36,8 +36,6 @@ class JWT {
 
     async decode (token) {
         try {
-            console.log("veo el token por decode");
-            console.log(token)
             const decodeToken = await jwt.decode(token, config.jwt_secret, {
                 algorithm: [config.algorithm || 'HS256']
             })
