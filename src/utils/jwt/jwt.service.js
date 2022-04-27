@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { config } = require("../../config");
+const pino = require("../pino/pino");
 
 class JWT {
     async verifyToken (req, res, next) {
@@ -10,6 +11,7 @@ class JWT {
             });
             next();
         } catch (error) {
+            pino.error(`Error en verificacion del token: ${error}`)
             return res.status(401).json({"response": "No dispones de un token valido"})
         }
     }
@@ -29,7 +31,7 @@ class JWT {
                 algorithm: config.jwt_algorithm_token || 'HS256'
             });
         } catch (error) {
-            console.log(error);
+            pino.error(`Error en generacion del token: ${error}`)
             return "error en generate token";
         }
     }
@@ -41,7 +43,8 @@ class JWT {
             })
             return decodeToken;
         } catch (error) {
-            return console.log(error, "error en decode")
+            pino.error(`Error en generacion del token: ${error}`)
+            return {"response": "error en la decodificacion del token"}
         }
     }
 }

@@ -1,5 +1,5 @@
 const dbSqlite = require("../config/sqlite3");
-
+const pino = require("../utils/pino/pino");
 const startSqlite3 = async () => {
     try {
         // create table productos in sqlite3
@@ -16,7 +16,7 @@ const startSqlite3 = async () => {
                 table.string("stock")
             });
         } else {
-            console.log("Ya existe la tabla productos")
+            pino.info("Ya existe la tabla productos")
         }
         
         hastable = await dbSqlite.client.schema.hasTable('carrito');
@@ -28,11 +28,11 @@ const startSqlite3 = async () => {
               
             });
         } else {
-            console.log("Ya existe la tabla carrito")
+            pino.info("Ya existe la tabla carrito")
         }
 
     } catch (error) {
-        console.log("Error: " + error);
+        pino.error("Error: " + error);
     }
 };
 module.exports = { startSqlite3 };

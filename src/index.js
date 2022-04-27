@@ -6,7 +6,8 @@ let path = require('path');
 const {config} = require("./config");
 const multer = require("multer");
 const routesServer = require("./routes");
-const isCluster = true;
+const pino = require("./utils/pino/pino");
+const isCluster = false;
 
 class App {
     constructor() {
@@ -44,17 +45,17 @@ class App {
                     cluster.fork();                
                 }
                 cluster.on("exit", (worker, corde, signal)=>{
-                    console.log(`Worker dead ${worker.process.pid}`);
+                    pino.error(`Worker dead ${worker.process.pid}`);
                     cluster.fork();
                 })
             }else{
                 this.app.listen(this.port, err=>{
-                    console.log(`Con Cluster: Server on http://localhost:${this.port}`)
+                    pino.info(`Con Cluster: Server on http://localhost:${this.port}`)
                 })
             }
         } else {
             this.app.listen(this.port, err=>{
-                console.log(`SIN CLUSTER: Server on http://localhost:${this.port}`)
+                pino.info(`SIN CLUSTER: Server on http://localhost:${this.port}`);  
             })
         }   
     }

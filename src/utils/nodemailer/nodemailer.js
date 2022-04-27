@@ -2,6 +2,8 @@ const { createTransport } = require("nodemailer");
 const { config } = require("../../config")
 const user = config.nodemailer_user;
 const pass = config.nodemailer_pw;
+const pino = require("../pino/pino");
+
 const transport = createTransport({
     service: 'gmail',
     port: 587,
@@ -27,20 +29,20 @@ class Nodemailer {
                     </ul>
                 `; 
             const to = process.argv[4] || user;
-            const response = await transport.sendMail({
+            return await transport.sendMail({
                 from:"E-commerce de Emilano <ecommerceEmiliano@gmail.com>",
                 to,
                 subject,
                 html
             });
-            console.log(response);
         } catch (error) {
-            console.log(error);
+            return pino.error(`Error en mandar el email: ${error}`)
         }
     }
 
     async sendMailCarrito (data_user, data_carrito) {
-        const html = 
+        try {
+            const html = 
             `
                 <h1>Informacion del pedido: </h1>
                 ${data_carrito.map(data_product => 
@@ -53,13 +55,16 @@ class Nodemailer {
                         </ul>
                     `)}
             `     
-        const response = await transport.sendMail({
-            from:"E-commerce de Emilano <ecommerceEmiliano@gmail.com>",
-            to: `${data_user.email}`,
-            subject: `Nuevo pedido de ${data_user.name}!`,
-            html
-        });
-        return response;
+            const response = await transport.sendMail({
+                from:"E-commerce de Emilano <ecommerceEmiliano@gmail.com>",
+                to: `${data_user.email}`,
+                subject: `Nuevo pedido de ${data_user.name}!`,
+                html
+            });
+            return response;
+        } catch (error) {
+            pino.error(`Error en enviar el email con el carrito de productos: ${error}`)   
+        }
     } 
 }
 module.exports = new Nodemailer()
