@@ -18,30 +18,57 @@ if (config.db_name === "mongo") {
 } else {
     carrito = new Carrito("./data/carrito.txt", null, null, null);
 }
+class Controller_carrito {
+    async createCarrito(req, res) {
+        try {
+            let time = moment().format('MMMM Do YYYY, h:mm:ss a');
+            return await res.status(200).json(await carrito.createCarrito(time));
+        } catch (error) {
+            return res.status(400).json({"response": "Error en crear carrito"});
+        }
+        
+    }
+    
+    async deleteCarrito (req, res) {
+        try {
+            return await res.status(200).json(await carrito.deleteCarrito(req.params));
+        } catch (error) {
+            return res.status(400).json({"response": "Error en eliminar carrito"})   
+        }
+    }
 
-const createCarrito = async (req, res) => {
-    let time = moment().format('MMMM Do YYYY, h:mm:ss a');
-    res.json(await carrito.createCarrito(time));
-}
-const deleteCarrito = async (req, res) => {
-    res.json(await carrito.deleteCarrito(req.params));
+    async getCarritoProducts (req, res) {
+        try {
+            return await res.status(200).json(await carrito.getCarritoProducts(req.params));
+        } catch (error) {
+            return res.status(400).json({"response": "Error en obtener carrito"})   
+        }
+    }
+
+    async addProductCarrito (req, res) {
+        try {
+            return await res.status(200).json(await carrito.addProductCarrito(req.params));
+        } catch (error) {
+            return res.status(400).json({"response": "Error en agregar carrito"})
+        }
+    }
+
+    async deleteCarritoProductByIds (req, res) {
+        try {
+            let time = moment().format('MMMM Do YYYY, h:mm:ss a');
+            return await res.status(200).json(await carrito.deleteCarritoProductByIds(req.params, time));   
+        } catch (error) {
+            return await res.status(400).json({"response": "Error en eliminar producto en el carrito por ID"})
+        }
+    }
+
+    async sendNotification (req, res) {
+        try {
+            return await res.status(200).json(await carrito.sendNotificationCarrito(req));
+        } catch (error) {
+            return await res.status(400).json({"response": "Error en enviar notificacion por email y mensaje por whatsapp"})
+        }
+    }
 }
 
-const getCarritoProducts = async (req, res) => {
-    res.json(await carrito.getCarritoProducts(req.params));
-}
-
-const addProductCarrito = async (req, res) => {
-    res.json(await carrito.addProductCarrito(req.params));
-}
-
-const deleteCarritoProductByIds = async (req, res) => {
-    let time = moment().format('MMMM Do YYYY, h:mm:ss a');
-    res.json(await carrito.deleteCarritoProductByIds(req.params, time));
-}
-
-const sendNotification = async (req, res) => {
-    return res.json(await carrito.sendNotificationCarrito(req));
-}
-
-module.exports = {createCarrito, deleteCarrito, getCarritoProducts, addProductCarrito, deleteCarritoProductByIds, sendNotification}
+module.exports = new Controller_carrito();

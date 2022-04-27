@@ -11,14 +11,8 @@ class UserService {
         password = await bcrypter.hashPassword(password);
         const photo = await this.imageToBase64(imageFile);
         const new_user = await userModel.create({...dataBody, password, photo});
-        // nodemailer.sendEmail(new_user);
         await nodemailer.sendMail(new_user);
         return await jwt.generateToken({...dataBody, photo});
-    }
-    async updateUser (data) {
-        const userExist = await this.getUserByEmail(data.email);
-        if (userExist.length !== 1) throw new Error("Email desconocido");
-        // actualizo usuario con user model
     }
     async imageToBase64 (file) {
         try {
@@ -36,13 +30,6 @@ class UserService {
             return await userModel.find({email: email})
         } catch (error) {
             return new Error("Error in get user by email")
-        }
-    }
-    async getUsers () {
-        try {
-            return await userModel.find({});
-        } catch (error) {
-            return new Error("Error in get users")
         }
     }
 }

@@ -6,7 +6,7 @@ let path = require('path');
 const {config} = require("./config");
 const multer = require("multer");
 const routesServer = require("./routes");
-const isCluster = false;
+const isCluster = true;
 
 class App {
     constructor() {
@@ -38,7 +38,6 @@ class App {
         routesServer(this.app);
     }
     async listen(){
-        // console.log(numCPUs)
         if (isCluster) {
             if(cluster.isMaster){
                 for (let i = 0; i < numCPUs; i++) {
@@ -50,8 +49,7 @@ class App {
                 })
             }else{
                 this.app.listen(this.port, err=>{
-                    console.log("PAS OPOR ELSE DE CLUSTER")
-                    console.log(`Server on http://localhost:${this.port}`)
+                    console.log(`Con Cluster: Server on http://localhost:${this.port}`)
                 })
             }
         } else {
@@ -63,19 +61,3 @@ class App {
 }
 
 module.exports = new App();
-
-// if (config.db_name === "mongo") {
-//     let {connection} = require("./config/mongodb");
-// }
-// Middlewares
-// app.use(express.static(path.join(__dirname, "public", "html")));
-// app.use(express.json());
-// app.use(express.urlencoded({extended: true}));
-// app.use(cors(config.cors));
-
-// // Routes
-// app.use('/api/productos', require('./routes/productos'));
-// app.use('/api/carrito', require('./routes/carrito'))
-
-
-// app.listen(config.port);

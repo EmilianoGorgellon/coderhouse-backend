@@ -15,9 +15,10 @@ class Carrito {
             const data_carrito = await this.getCarritoProducts(req.params);
             await nodemailer.sendMailCarrito(data_user, data_carrito[0].productos);
             await send_whatsapp_twilio(data_user);
-            return `Email y mensaje por whatsapp a ${data_user.name}`;
+            return {"response":`Email y mensaje por whatsapp enviados a ${data_user.name}`};
         } catch (error) {
-            return console.log(error);
+            // return console.log(error);
+            return {"response": "Error, no se pudo enviar email"}
         }
     }
     async getAll(){
@@ -95,10 +96,7 @@ class Carrito {
 
     async getCarritoProducts(id){
         try {
-            console.log(id);
             id = parseInt(id.id);
-            console.log("veo el id");
-            console.log(id)
             let getAllCarrito = await this.getAll();
             let newAllCarrito = getAllCarrito.filter(data => data.id === id)
             return newAllCarrito;
